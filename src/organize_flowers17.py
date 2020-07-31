@@ -38,46 +38,61 @@ if __name__ == '__main__':
     flowers17_url = "http://www.robots.ox.ac.uk/~vgg/data/flowers/17/"
     flowers17_name = "17flowers.tgz"
     train_dir = "dataset"
+    h5_dir = 'output'
+    h5_data = 'output/data.h5'
+    h5_labels = 'output/labels.h5'
+
+    if not os.path.exists(h5_dir):
+        os.makedirs(h5_dir)
+        # flags
+        flags = os.O_RDWR | os.O_CREAT
+        mode = 0o666
+        os.open(path = h5_data, flags = flags, mode = mode)
+        os.open(path = h5_labels, flags = flags, mode = mode)
+        print("[INFO] h5_dir made successfully.")
 
     if not os.path.exists(train_dir):
         os.makedirs(train_dir)
+        print("[INFO] x.")
 
-    download_dataset(flowers17_name, flowers17_url, train_dir)
-    if os.path.exists(train_dir + "\\jpg"):
-        os.rename(train_dir + "\\jpg", train_dir + "\\train")
+        download_dataset(flowers17_name, flowers17_url, train_dir)
+        print("[INFO] xx.")
+        if os.path.exists(train_dir + "\\jpg"):
+            os.rename(train_dir + "\\jpg", train_dir + "\\train")
 
-    # get the class label limit
-    class_limit = 17
 
-    # take all the images from the dataset
-    image_paths = glob.glob(train_dir + "\\train\\*.jpg")
+        # get the class label limit
+        class_limit = 17
 
-    # variables to keep track
-    label = 0
-    i = 0
-    j = 80
+        # take all the images from the dataset
+        image_paths = glob.glob(train_dir + "\\train\\*.jpg")
 
-    # flower17 class names
-    class_names = ["daffodil", "snowdrop", "lilyvalley", "bluebell", "crocus",
-                   "iris", "tigerlily", "tulip", "fritillary", "sunflower",
-                   "daisy", "coltsfoot", "dandelion", "cowslip", "buttercup",
-                   "windflower", "pansy"]
+        # variables to keep track
+        label = 0
+        i = 0
+        j = 80
 
-    # loop over the class labels
-    for x in range(1, class_limit+1):
-        # create a folder for that class
-        os.makedirs(train_dir + "\\train\\" + class_names[label])
+        # flower17 class names
+        class_names = ["daffodil", "snowdrop", "lilyvalley", "bluebell", "crocus",
+                       "iris", "tigerlily", "tulip", "fritillary", "sunflower",
+                       "daisy", "coltsfoot", "dandelion", "cowslip", "buttercup",
+                       "windflower", "pansy"]
 
-        # get the current path
-        cur_path = train_dir + "\\train\\" + class_names[label] + "\\"
+        # loop over the class labels
+        for x in range(1, class_limit+1):
+            # create a folder for that class
+            os.makedirs(train_dir + "\\train\\" + class_names[label])
 
-        # loop over the images in the dataset
-        for index, image_path in enumerate(image_paths[i:j], start=1):
-            original_path   = image_path
-            image_path      = image_path.split("\\")
-            image_file_name = str(index) + ".jpg"
-            os.rename(original_path, cur_path + image_file_name)
+            # get the current path
+            cur_path = train_dir + "\\train\\" + class_names[label] + "\\"
 
-        i += 80
-        j += 80
-        label += 1
+            # loop over the images in the dataset
+            for index, image_path in enumerate(image_paths[i:j], start=1):
+                original_path   = image_path
+                image_path      = image_path.split("\\")
+                image_file_name = str(index) + ".jpg"
+                os.rename(original_path, cur_path + image_file_name)
+
+            i += 80
+            j += 80
+            label += 1
