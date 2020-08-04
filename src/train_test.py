@@ -125,3 +125,29 @@ fig.suptitle('Machine Learning algorithm comparison 2')
 pyplot.bar(names, results)
 pyplot.show()
 
+
+# import the feature vector and trained labels
+h5f_data = h5py.File('output/data_test.h5', 'r')
+h5f_label = h5py.File('output/labels_test.h5', 'r')
+
+global_features_string = h5f_data['dataset_1']
+global_labels_string = h5f_label['dataset_1']
+
+global_features = np.array(global_features_string)
+global_labels = np.array(global_labels_string)
+
+h5f_data.close()
+h5f_label.close()
+
+print("[STATUS] features shape: {}".format(global_features.shape))
+print("[STATUS] labels shape: {}".format(global_labels.shape))
+
+for name, model in models:
+    prediction = model.predict(global_features)
+    result = accuracy_score(prediction, global_labels)
+    results.append(result)
+    names.append(name)
+    msg = "%s: %f" % (name, result)
+    print(msg)
+    print(confusion_matrix(prediction, global_labels))
+

@@ -8,6 +8,8 @@ import mahotas
 import cv2
 import os
 import h5py
+import re
+
 
 #####################
 # tunable-parameters
@@ -108,11 +110,13 @@ print("[STATUS] training Labels {}".format(np.array(labels).shape))
 targetNames = np.unique(labels)
 le = LabelEncoder()
 target = le.fit_transform(labels)
+print(target)
 print("[STATUS] training labels encoded...")
 
 # scale features in the range (0-1)
-scaler = MinMaxScaler(feature_range=(0, 1))
-rescaled_features = scaler.fit_transform(global_features)
+#scaler = MinMaxScaler(feature_range=(0, 1))
+#rescaled_features = scaler.fit_transform(global_features)
+rescaled_features = global_features
 print("[STATUS] feature vector normalized...")
 
 print("[STATUS] target labels: {}".format(target))
@@ -127,5 +131,7 @@ h5f_label.create_dataset('dataset_1', data=np.array(target))
 
 h5f_data.close()
 h5f_label.close()
+
+print("[STATUS] completed Global Feature Extraction...")
 
 print("[STATUS] end of training..")
