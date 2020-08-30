@@ -26,7 +26,9 @@ labels = []
 
 brisk = cv2.BRISK_create(30)
 
-for training_name in train_labels[:2]:
+import operator
+oper = operator.itemgetter(6, 13)
+for training_name in oper(train_labels):
     # join the training data path and each species training folder
     dir = os.path.join(train_path, training_name)
 
@@ -62,16 +64,23 @@ print("[STATUS] feature vector size {}".format(np.array(features_descriptors).sh
 print("[STATUS] training Labels {}".format(np.array(labels).shape))
 
 #encode the target labels
-targetNames = np.unique(labels)
-le = LabelEncoder()
-target = le.fit_transform(labels)
+# targetNames = np.unique(labels)
+# le = LabelEncoder()
+# target = le.fit_transform(labels)
+# print(target)
+# print("[STATUS] training labels encoded...")
+
+
+targetNames = os.listdir('dataset/train/')
+print(targetNames)
+target = np.array([targetNames.index(lable) for lable in labels])
 print(target)
 print("[STATUS] training labels encoded...")
 
 descriptors = features_descriptors[0][1]
 for des in features_descriptors:
-     descriptors = np.vstack((descriptors, des))
-     print(descriptors.shape)
+    descriptors = np.vstack((descriptors, des))
+    print(descriptors.shape)
 
 descriptors_float = descriptors.astype(float)
 
@@ -126,3 +135,6 @@ accuracy = accuracy_score(testLabelsGlobal, prediction)
 print("accuracy = ", accuracy)
 cm = confusion_matrix(testLabelsGlobal, prediction)
 print(cm)
+
+import joblib
+joblib.dump((clf, train_labels, stdSlr, k, voc), "bovw.pkl", compress=3)
