@@ -80,6 +80,7 @@ if __name__ == '__main__':
 
         # loop over the class labels
         for x in range(1, class_limit+1):
+            print(x)
             # create a folder for that class
             os.makedirs(train_dir + "\\train\\" + class_names[label])
 
