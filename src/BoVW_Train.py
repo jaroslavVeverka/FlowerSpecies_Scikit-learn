@@ -27,8 +27,8 @@ labels = []
 brisk = cv2.BRISK_create(30)
 
 import operator
-oper = operator.itemgetter(6, 13)
-for training_name in oper(train_labels):
+#oper = operator.itemgetter(6, 13)
+for training_name in train_labels:
     # join the training data path and each species training folder
     dir = os.path.join(train_path, training_name)
 
