@@ -3,10 +3,11 @@ import cv2
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import h5py
+from tensorflow.python.keras.losses import SparseCategoricalCrossentropy
 
 train_path = "dataset/train"
 images_per_class = 80
-fixed_size = tuple((500, 500))
+fixed_size = tuple((400, 400))
 h5_data = 'output/dataCNN.h5'
 h5_labels = 'output/labelsCNN.h5'
 
@@ -78,7 +79,7 @@ print(test_X.shape)
 import keras
 from keras.models import Sequential,Input,Model
 from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, MaxPool2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 
@@ -86,22 +87,21 @@ batch_size = 64
 epochs = 20
 num_classes = 10
 
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),activation='linear',input_shape=(500,500,1),padding='same'))
-model.add(LeakyReLU(alpha=0.1))
-model.add(MaxPooling2D((2, 2),padding='same'))
-model.add(Conv2D(64, (3, 3), activation='linear',padding='same'))
-model.add(LeakyReLU(alpha=0.1))
-model.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
-model.add(Conv2D(128, (3, 3), activation='linear',padding='same'))
-model.add(LeakyReLU(alpha=0.1))
-model.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
-model.add(Flatten())
-model.add(Dense(128, activation='linear'))
-model.add(LeakyReLU(alpha=0.1))
-model.add(Dense(num_classes, activation='softmax'))
+model = Sequential([
+    Conv2D(32,(3,3),activation='relu',input_shape=(400,400,3)),
+    MaxPool2D((2,2)),
+    Conv2D(64,(3,3),activation='relu'),
+    MaxPool2D((2,2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    Flatten(),
+    Dense(64,activation='relu'),
+    Dense(100)
 
-model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adam(),metrics=['accuracy'])
+])
+
+model.compile(optimizer='adam',
+              loss=SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
 model.summary()
 
 model_train_test = model.fit(train_X, train_label, batch_size=batch_size, epochs=epochs, verbose=1,
