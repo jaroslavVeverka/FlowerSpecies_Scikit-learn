@@ -1,6 +1,6 @@
-#-----------------------------------
+# -----------------------------------
 # TRAINING OUR MODEL
-#-----------------------------------
+# -----------------------------------
 import h5py
 import numpy as np
 import os
@@ -25,8 +25,8 @@ warnings.filterwarnings('ignore')
 # tunable-parameters
 #####################
 num_trees = 100
-test_size = 0.10
-seed = 9
+test_size = 0.2
+seed = 42
 train_path = "dataset/train"
 test_path = "dataset/test"
 h5_data = 'output/data.h5'
@@ -44,7 +44,7 @@ if not os.path.exists(test_path):
 
 # create all the machine learning models
 models = []
-models.append(('LR', LogisticRegression(random_state=seed)))
+models.append(('LR', LogisticRegression(max_iter=10000)))
 models.append(('LDA', LinearDiscriminantAnalysis()))
 models.append(('KNN', KNeighborsClassifier()))
 models.append(('CART', DecisionTreeClassifier(random_state=seed)))
@@ -73,9 +73,11 @@ print("[STATUS] training started...")
 
 # split the training and testing data
 trainDataGlobal, testDataGlobal, trainLabelsGlobal, testLabelsGlobal = train_test_split(np.array(global_features),
-                                                                                          np.array(global_labels),
-                                                                                          test_size=test_size,
-                                                                                          random_state=seed)
+                                                                                        np.array(global_labels),
+                                                                                        test_size=test_size,
+                                                                                        stratify=np.array(
+                                                                                            global_labels),
+                                                                                        random_state=seed)
 
 print("[STATUS] splitted train and test data...")
 print("Train data  : {}".format(trainDataGlobal.shape))
@@ -87,22 +89,22 @@ print("Test labels : {}".format(testLabelsGlobal.shape))
 results = []
 names = []
 
-# 10-fold cross validation
-for name, model in models:
-    kfold = KFold(n_splits=10, random_state=seed)
-    cv_results = cross_val_score(model, trainDataGlobal, trainLabelsGlobal, cv=kfold, scoring=scoring)
-    results.append(cv_results)
-    names.append(name)
-    msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
-    print(msg)
-
-# boxplot algorithm comparison
-fig = pyplot.figure()
-fig.suptitle('Machine Learning algorithm comparison')
-ax = fig.add_subplot(111)
-pyplot.boxplot(results)
-ax.set_xticklabels(names)
-pyplot.show()
+# # 10-fold cross validation
+# for name, model in models:
+#     kfold = KFold(n_splits=10, random_state=seed)
+#     cv_results = cross_val_score(model, trainDataGlobal, trainLabelsGlobal, cv=kfold, scoring=scoring)
+#     results.append(cv_results)
+#     names.append(name)
+#     msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
+#     print(msg)
+#
+# # boxplot algorithm comparison
+# fig = pyplot.figure()
+# fig.suptitle('Machine Learning algorithm comparison')
+# ax = fig.add_subplot(111)
+# pyplot.boxplot(results)
+# ax.set_xticklabels(names)
+# pyplot.show()
 
 results = []
 names = []
@@ -124,29 +126,27 @@ fig.suptitle('Machine Learning algorithm comparison 2')
 pyplot.bar(names, results)
 pyplot.show()
 
-
-# import the feature vector and trained labels
-h5f_data = h5py.File('output/data_test.h5', 'r')
-h5f_label = h5py.File('output/labels_test.h5', 'r')
-
-global_features_string = h5f_data['dataset_1']
-global_labels_string = h5f_label['dataset_1']
-
-global_features = np.array(global_features_string)
-global_labels = np.array(global_labels_string)
-
-h5f_data.close()
-h5f_label.close()
-
-print("[STATUS] features shape: {}".format(global_features.shape))
-print("[STATUS] labels shape: {}".format(global_labels.shape))
-
-for name, model in models:
-    prediction = model.predict(global_features)
-    result = accuracy_score(prediction, global_labels)
-    results.append(result)
-    names.append(name)
-    msg = "%s: %f" % (name, result)
-    print(msg)
-    print(confusion_matrix(prediction, global_labels))
-
+# # import the feature vector and trained labels
+# h5f_data = h5py.File('output/data_test.h5', 'r')
+# h5f_label = h5py.File('output/labels_test.h5', 'r')
+#
+# global_features_string = h5f_data['dataset_1']
+# global_labels_string = h5f_label['dataset_1']
+#
+# global_features = np.array(global_features_string)
+# global_labels = np.array(global_labels_string)
+#
+# h5f_data.close()
+# h5f_label.close()
+#
+# print("[STATUS] features shape: {}".format(global_features.shape))
+# print("[STATUS] labels shape: {}".format(global_labels.shape))
+#
+# for name, model in models:
+#     prediction = model.predict(global_features)
+#     result = accuracy_score(prediction, global_labels)
+#     results.append(result)
+#     names.append(name)
+#     msg = "%s: %f" % (name, result)
+#     print(msg)
+#     print(confusion_matrix(prediction, global_labels))
