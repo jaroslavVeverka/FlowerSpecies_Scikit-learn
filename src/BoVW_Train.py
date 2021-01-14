@@ -80,7 +80,8 @@ print("[STATUS] training labels encoded...")
 descriptors = features_descriptors[0][1]
 for des in features_descriptors:
     descriptors = np.vstack((descriptors, des))
-    print(descriptors.shape)
+  
+print(descriptors.shape)
 
 descriptors_float = descriptors.astype(float)
 

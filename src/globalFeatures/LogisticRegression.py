@@ -29,6 +29,28 @@ X_train, X_test, y_train, y_test = train_test_split(np.array(extracted_features)
                                                     np.array(labels),
                                                     test_size=0.2, stratify=np.array(labels), random_state=42)
 
+X_train = pd.DataFrame(X_train)
+X_test = pd.DataFrame(X_test)
+
+train_data = pd.concat([pd.DataFrame(y_train), X_train], axis=1)
+test_data = pd.concat([pd.DataFrame(y_test), X_test], axis=1)
+
+train_data.to_csv('train_data.csv', index=False)
+test_data.to_csv('test_data.csv', index=False)
+
+train_data = pd.read_csv('train_data.csv')
+test_data = pd.read_csv('test_data.csv')
+
+y_train = train_data.iloc[:,0]
+y_test = test_data.iloc[:,0]
+X_train = train_data.iloc[:,1:]
+X_test = test_data.iloc[:,1:]
+
+print('[INFO] y_train dim:', y_train.shape)
+print('[INFO] y_test dim:', y_test.shape)
+print('[INFO] X_train:', X_train.shape)
+print('[INFO] X_train dim:', X_test.shape)
+
 ### basic model ###
 start_time = time.time()
 lr = LogisticRegression(max_iter=10000)
