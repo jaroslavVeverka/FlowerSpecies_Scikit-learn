@@ -12,7 +12,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 
 # path to data
-data_dir = 'C:/Users/jarda/IdeaProjects/FlowerSpecies_Scikit-learn/src/dataset/train/'
+data_dir = '../dataset/train/'
 
 # get labeled images
 labeled_images = prepare_images(data_dir)
