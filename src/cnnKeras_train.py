@@ -7,7 +7,7 @@ from tensorflow.python.keras.losses import SparseCategoricalCrossentropy
 
 train_path = "dataset/train"
 images_per_class = 80
-fixed_size = tuple((400, 400))
+fixed_size = tuple((300, 300))
 h5_data = 'output/dataCNN.h5'
 h5_labels = 'output/labelsCNN.h5'
 
@@ -84,20 +84,18 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 
 batch_size = 64
-epochs = 20
+epochs = 10
 num_classes = 10
 
-model = Sequential([
-    Conv2D(32,(3,3),activation='relu',input_shape=(400,400,3)),
-    MaxPool2D((2,2)),
-    Conv2D(64,(3,3),activation='relu'),
-    MaxPool2D((2,2)),
-    Conv2D(64, (3, 3), activation='relu'),
-    Flatten(),
-    Dense(64,activation='relu'),
-    Dense(100)
-
-])
+model = Sequential()
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(300, 300, 3)))
+model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(Flatten())
+model.add(Dense(64, activation='relu'))
+model.add(Dense(17))
 
 model.compile(optimizer='adam',
               loss=SparseCategoricalCrossentropy(from_logits=True),
