@@ -108,3 +108,43 @@ print(conf_matrix)
 print(classification_report(y_test, y_pred))
 
 print(round(time.time() - start_time, 2))
+
+### model with scaler and hyperparameter tuning + PCA ###
+print('[INFO] model LR with scaler and hyperparameter tuning + PCA')
+start_time = time.time()
+from sklearn.decomposition import PCA
+
+steps = [('scaler', StandardScaler()),
+         ('pca', PCA()),
+         ('classifier', LogisticRegression(max_iter=10000))]
+
+params_space = {
+    'pca__n_components': [5, 10, 15, 20, 30, 40, 50, 60, 120],
+    'classifier__solver': ['lbfgs', 'liblinear'],
+    'classifier__C': [0.001, 0.01, 0.1, 1.0, 10],
+    'classifier__penalty': ['l2']
+}
+
+pipeline = Pipeline(steps)
+
+gs_logit_pca = GridSearchCV(estimator=pipeline,
+                        param_grid=params_space,
+                        scoring='neg_root_mean_squared_error',
+                        cv=10,
+                        verbose=0)
+
+gs_logit_pca.fit(X_train_trans_bovw, y_train)
+
+for i in range(len(gs_logit_pca.cv_results_['params'])):
+    print(gs_logit_pca.cv_results_['params'][i], 'test RMSE:', gs_logit_pca.cv_results_['mean_test_score'][i])
+
+y_pred = gs_logit_pca.best_estimator_.predict(X_test_trans_bovw)
+
+print('[STATUS] Acc. score on test data: ', 
+      gs_logit_pca.best_estimator_.score(X_test_trans_bovw, y_test))
+conf_matrix = confusion_matrix(y_pred, y_test)
+print(conf_matrix)
+print(classification_report(y_test, y_pred))
+
+print(round(time.time() - start_time, 2))
+
